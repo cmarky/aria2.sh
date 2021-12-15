@@ -77,8 +77,8 @@ check_pid() {
 check_new_ver() {
     aria2_new_ver=$(
         {
-            wget -t2 -T3 -qO- "https://api.github.com/repos/P3TERX/Aria2-Pro-Core/releases/latest" ||
-                wget -t2 -T3 -qO- "https://gh-api.p3terx.com/repos/P3TERX/Aria2-Pro-Core/releases/latest"
+            tsocks wget -t2 -T3 -qO- "https://api.github.com/repos/P3TERX/Aria2-Pro-Core/releases/latest" ||
+                tsocks wget -t2 -T3 -qO- "https://gh-api.p3terx.com/repos/P3TERX/Aria2-Pro-Core/releases/latest"
         } | grep -o '"tag_name": ".*"' | head -n 1 | cut -d'"' -f4
     )
     if [[ -z ${aria2_new_ver} ]]; then
@@ -118,8 +118,8 @@ Download_aria2() {
     done
     DOWNLOAD_URL="https://github.com/P3TERX/Aria2-Pro-Core/releases/download/${aria2_new_ver}/aria2-${aria2_new_ver%_*}-static-linux-${ARCH}.tar.gz"
     {
-        wget -t2 -T3 -O- "${DOWNLOAD_URL}" ||
-            wget -t2 -T3 -O- "https://gh-acc.p3terx.com/${DOWNLOAD_URL}"
+        tsocks wget -t2 -T3 -O- "${DOWNLOAD_URL}" ||
+            tsocks wget -t2 -T3 -O- "https://gh-acc.p3terx.com/${DOWNLOAD_URL}"
     } | tar -zx
     [[ ! -s "aria2c" ]] && echo -e "${Error} Aria2 下载失败 !" && exit 1
     [[ ${update_dl} = "update" ]] && rm -f "${aria2c}"
@@ -148,9 +148,9 @@ LICENSE
     mkdir -p "${aria2_conf_dir}" && cd "${aria2_conf_dir}"
     for PROFILE in ${PROFILE_LIST}; do
         [[ ! -f ${PROFILE} ]] && rm -rf ${PROFILE}
-        wget -N -t2 -T3 ${PROFILE_URL1}/${PROFILE} ||
-            wget -N -t2 -T3 ${PROFILE_URL2}/${PROFILE} ||
-            wget -N -t2 -T3 ${PROFILE_URL3}/${PROFILE}
+        tsocks wget -N -t2 -T3 ${PROFILE_URL1}/${PROFILE} ||
+            tsocks wget -N -t2 -T3 ${PROFILE_URL2}/${PROFILE} ||
+            tsocks wget -N -t2 -T3 ${PROFILE_URL3}/${PROFILE}
         [[ ! -s ${PROFILE} ]] && {
             echo -e "${Error} '${PROFILE}' 下载失败！清理残留文件..."
             rm -vrf "${aria2_conf_dir}"
@@ -168,9 +168,9 @@ LICENSE
 }
 Service_aria2() {
     if [[ ${release} = "centos" ]]; then
-        wget -N -t2 -T3 "https://raw.githubusercontent.com/P3TERX/aria2.sh/master/service/aria2_centos" -O /etc/init.d/aria2 ||
-            wget -N -t2 -T3 "https://cdn.jsdelivr.net/gh/P3TERX/aria2.sh@master/service/aria2_centos" -O /etc/init.d/aria2 ||
-            wget -N -t2 -T3 "https://gh-raw.p3terx.com/P3TERX/aria2.sh/master/service/aria2_centos" -O /etc/init.d/aria2
+        tsocks wget -N -t2 -T3 "https://raw.githubusercontent.com/P3TERX/aria2.sh/master/service/aria2_centos" -O /etc/init.d/aria2 ||
+            tsocks wget -N -t2 -T3 "https://cdn.jsdelivr.net/gh/P3TERX/aria2.sh@master/service/aria2_centos" -O /etc/init.d/aria2 ||
+            tsocks wget -N -t2 -T3 "https://gh-raw.p3terx.com/P3TERX/aria2.sh/master/service/aria2_centos" -O /etc/init.d/aria2
         [[ ! -s /etc/init.d/aria2 ]] && {
             echo -e "${Error} Aria2服务 管理脚本下载失败 !"
             exit 1
@@ -179,9 +179,9 @@ Service_aria2() {
         chkconfig --add aria2
         chkconfig aria2 on
     else
-        wget -N -t2 -T3 "https://raw.githubusercontent.com/P3TERX/aria2.sh/master/service/aria2_debian" -O /etc/init.d/aria2 ||
-            wget -N -t2 -T3 "https://cdn.jsdelivr.net/gh/P3TERX/aria2.sh@master/service/aria2_debian" -O /etc/init.d/aria2 ||
-            wget -N -t2 -T3 "https://gh-raw.p3terx.com/P3TERX/aria2.sh/master/service/aria2_debian" -O /etc/init.d/aria2
+        tsocks wget -N -t2 -T3 "https://raw.githubusercontent.com/P3TERX/aria2.sh/master/service/aria2_debian" -O /etc/init.d/aria2 ||
+            tsocks wget -N -t2 -T3 "https://cdn.jsdelivr.net/gh/P3TERX/aria2.sh@master/service/aria2_debian" -O /etc/init.d/aria2 ||
+            tsocks wget -N -t2 -T3 "https://gh-raw.p3terx.com/P3TERX/aria2.sh/master/service/aria2_debian" -O /etc/init.d/aria2
         [[ ! -s /etc/init.d/aria2 ]] && {
             echo -e "${Error} Aria2服务 管理脚本下载失败 !"
             exit 1
@@ -200,7 +200,7 @@ Installation_dependency() {
         apt-get install -y wget curl nano ca-certificates findutils jq tar gzip dpkg
     fi
     if [[ ! -s /etc/ssl/certs/ca-certificates.crt ]]; then
-        wget -qO- git.io/ca-certificates.sh | bash
+        tsocks wget -qO- git.io/ca-certificates.sh | bash
     fi
 }
 Install_aria2() {
@@ -492,14 +492,14 @@ View_Aria2() {
     check_installed_status
     Read_config
     IPV4=$(
-        wget -qO- -t1 -T2 -4 api.ip.sb/ip ||
-            wget -qO- -t1 -T2 -4 ifconfig.io/ip ||
-            wget -qO- -t1 -T2 -4 www.trackip.net/ip
+        tsocks wget -qO- -t1 -T2 -4 api.ip.sb/ip ||
+            tsocks wget -qO- -t1 -T2 -4 ifconfig.io/ip ||
+            tsocks wget -qO- -t1 -T2 -4 www.trackip.net/ip
     )
     IPV6=$(
-        wget -qO- -t1 -T2 -6 api.ip.sb/ip ||
-            wget -qO- -t1 -T2 -6 ifconfig.io/ip ||
-            wget -qO- -t1 -T2 -6 www.trackip.net/ip
+        tsocks wget -qO- -t1 -T2 -6 api.ip.sb/ip ||
+            tsocks wget -qO- -t1 -T2 -6 ifconfig.io/ip ||
+            tsocks wget -qO- -t1 -T2 -6 www.trackip.net/ip
     )
     [[ -z "${IPV4}" ]] && IPV4="IPv4 地址检测失败"
     [[ -z "${IPV6}" ]] && IPV6="IPv6 地址检测失败"
@@ -563,7 +563,7 @@ crontab_update_start() {
     crontab -l >"/tmp/crontab.bak"
     sed -i "/aria2.sh update-bt-tracker/d" "/tmp/crontab.bak"
     sed -i "/tracker.sh/d" "/tmp/crontab.bak"
-    echo -e "\n0 7 * * * /bin/bash <(wget -qO- git.io/tracker.sh) ${aria2_conf} RPC 2>&1 | tee ${aria2_conf_dir}/tracker.log" >>"/tmp/crontab.bak"
+    echo -e "\n0 7 * * * /bin/bash <(tsocks wget -qO- git.io/tracker.sh) ${aria2_conf} RPC 2>&1 | tee ${aria2_conf_dir}/tracker.log" >>"/tmp/crontab.bak"
     crontab "/tmp/crontab.bak"
     rm -f "/tmp/crontab.bak"
     if [[ -z $(crontab_update_status) ]]; then
@@ -589,9 +589,9 @@ Update_bt_tracker() {
     check_installed_status
     check_pid
     [[ -z $PID ]] && {
-        bash <(wget -qO- git.io/tracker.sh) ${aria2_conf}
+        bash <(tsocks wget -qO- git.io/tracker.sh) ${aria2_conf}
     } || {
-        bash <(wget -qO- git.io/tracker.sh) ${aria2_conf} RPC
+        bash <(tsocks wget -qO- git.io/tracker.sh) ${aria2_conf} RPC
     }
 }
 Update_aria2() {
@@ -657,7 +657,7 @@ Set_iptables() {
     fi
 }
 Update_Shell() {
-    sh_new_ver=$(wget -qO- -t1 -T3 "https://raw.githubusercontent.com/P3TERX/aria2.sh/master/aria2.sh" | grep 'sh_ver="' | awk -F "=" '{print $NF}' | sed 's/\"//g' | head -1) && sh_new_type="github"
+    sh_new_ver=$(tsocks wget -qO- -t1 -T3 "https://raw.githubusercontent.com/P3TERX/aria2.sh/master/aria2.sh" | grep 'sh_ver="' | awk -F "=" '{print $NF}' | sed 's/\"//g' | head -1) && sh_new_type="github"
     [[ -z ${sh_new_ver} ]] && echo -e "${Error} 无法链接到 Github !" && exit 0
     if [[ -e "/etc/init.d/aria2" ]]; then
         rm -rf /etc/init.d/aria2
@@ -667,7 +667,7 @@ Update_Shell() {
     if [[ -n $(crontab_update_status) ]]; then
         crontab_update_stop
     fi
-    wget -N "https://raw.githubusercontent.com/P3TERX/aria2.sh/master/aria2.sh" && chmod +x aria2.sh
+    tsocks wget -N "https://raw.githubusercontent.com/P3TERX/aria2.sh/master/aria2.sh" && chmod +x aria2.sh
     echo -e "脚本已更新为最新版本[ ${sh_new_ver} ] !(注意：因为更新方式为直接覆盖当前运行的脚本，所以可能下面会提示一些报错，无视即可)" && exit 0
 }
 
