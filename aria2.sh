@@ -194,10 +194,10 @@ Service_aria2() {
 Installation_dependency() {
     if [[ ${release} = "centos" ]]; then
         yum update
-        yum install -y wget curl nano ca-certificates findutils jq tar gzip dpkg
+        yum install -y wget curl vim ca-certificates findutils jq tar gzip dpkg
     else
         apt-get update
-        apt-get install -y wget curl nano ca-certificates findutils jq tar gzip dpkg
+        apt-get install -y wget curl vim ca-certificates findutils jq tar gzip dpkg
     fi
     if [[ ! -s /etc/ssl/certs/ca-certificates.crt ]]; then
         tsocks wget -qO- git.io/ca-certificates.sh | bash
@@ -431,14 +431,14 @@ Set_aria2_vim_conf() {
 
  ${Tip} 手动修改配置文件须知：
  
- ${Green_font_prefix}1.${Font_color_suffix} 默认使用 nano 文本编辑器打开
+ ${Green_font_prefix}1.${Font_color_suffix} 默认使用 nano 文本编辑器打开，已替换为vim
  ${Green_font_prefix}2.${Font_color_suffix} 退出并保存文件：按 ${Green_font_prefix}Ctrl+X${Font_color_suffix} 组合键，输入 ${Green_font_prefix}y${Font_color_suffix} ，按 ${Green_font_prefix}Enter${Font_color_suffix} 键
  ${Green_font_prefix}3.${Font_color_suffix} 退出不保存文件：按 ${Green_font_prefix}Ctrl+X${Font_color_suffix} 组合键，输入 ${Green_font_prefix}n${Font_color_suffix}
  ${Green_font_prefix}4.${Font_color_suffix} nano 详细使用教程：${Green_font_prefix}https://p3terx.com/archives/linux-nano-tutorial.html${Font_color_suffix}
  ${Green_font_prefix}5.${Font_color_suffix} 配置文件有中文注释，若语言设置有问题会导致中文乱码
  "
     read -e -p "按任意键继续，按 Ctrl+C 组合键取消" var
-    nano "${aria2_conf}"
+    vim "${aria2_conf}"
     Read_config
     if [[ ${aria2_port_old} != ${aria2_port} ]]; then
         aria2_RPC_port=${aria2_port}
